@@ -26,11 +26,11 @@ function createBoard() {
 
     const front = document.createElement('div');
     front.classList.add('front');
-    front.textContent = '?';
+    front.textContent = '?'; // Show the question mark initially
 
     const back = document.createElement('div');
     back.classList.add('back');
-    back.textContent = card.value;
+    back.textContent = card.value; // Show the card value when flipped
 
     cardElement.appendChild(front);
     cardElement.appendChild(back);

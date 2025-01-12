@@ -21,7 +21,6 @@ function createBoard() {
   shuffledCards.forEach((card, index) => {
     const cardElement = document.createElement('div');
     cardElement.classList.add('card');
-    cardElement.dataset.id = index;
     cardElement.dataset.value = card.value;
 
     const front = document.createElement('div');
@@ -35,7 +34,9 @@ function createBoard() {
     cardElement.appendChild(front);
     cardElement.appendChild(back);
 
+    // Add event listeners for both click and touchstart for mobile support
     cardElement.addEventListener('click', () => flipCard(cardElement));
+    cardElement.addEventListener('touchstart', () => flipCard(cardElement));
 
     gameBoard.appendChild(cardElement);
   });
@@ -96,7 +97,7 @@ function showTimeUpPopup() {
 }
 
 function resetGame() {
-  timeLeft = 60;
+  timeLeft = 30; // Reset timer to 30 seconds
   matchedPairs = 0;
   flippedCards = [];
   document.getElementById('startBtn').style.display = 'block';

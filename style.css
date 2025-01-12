@@ -1,127 +1,136 @@
-const cards = [
-  { id: 1, value: 'A' }, { id: 2, value: 'B' }, { id: 3, value: 'C' },
-  { id: 4, value: 'D' }, { id: 5, value: 'E' }, { id: 6, value: 'F' },
-  { id: 7, value: 'A' }, { id: 8, value: 'B' }, { id: 9, value: 'C' },
-  { id: 10, value: 'D' }, { id: 11, value: 'E' }, { id: 12, value: 'F' }
-];
-let flippedCards = [];
-let matchedPairs = 0;
-let timer;
-let timeLeft = 30;
-
-function shuffleCards() {
-  return cards.sort(() => Math.random() - 0.5);
+/* Gradient background */
+body {
+  background: linear-gradient(45deg, #8a2be2, #4b0082);
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  overflow: hidden;
 }
 
-function createBoard() {
-  const gameBoard = document.getElementById('gameBoard');
-  const shuffledCards = shuffleCards();
-  gameBoard.innerHTML = ''; // Clear any previous board
-
-  shuffledCards.forEach((card, index) => {
-    const cardElement = document.createElement('div');
-    cardElement.classList.add('card');
-    cardElement.dataset.id = index;
-    cardElement.dataset.value = card.value;
-
-    const front = document.createElement('div');
-    front.classList.add('front');
-    front.textContent = '?'; // Show the question mark initially
-
-    const back = document.createElement('div');
-    back.classList.add('back');
-    back.textContent = card.value; // Show the card value when flipped
-
-    cardElement.appendChild(front);
-    cardElement.appendChild(back);
-
-    cardElement.addEventListener('click', () => flipCard(cardElement));
-
-    gameBoard.appendChild(cardElement);
-  });
-
-  startTimer();
+/* Game container */
+#gameContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 90vw; /* Set the width to 90% of viewport width */
+  max-width: 600px; /* Set a max width for the game board */
+  min-width: 300px; /* Set a min width for smaller screens */
+  background-color: rgba(255, 255, 255, 0.9);
+  border-radius: 10px;
+  padding: 20px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
 }
 
-function flipCard(cardElement) {
-  if (cardElement.classList.contains('flipped') || flippedCards.length === 2) return;
-
-  cardElement.classList.add('flipped');
-  flippedCards.push(cardElement);
-
-  if (flippedCards.length === 2) {
-    checkMatch();
-  }
+/* Game board styling */
+#gameBoard {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr); /* 4 cards per row */
+  grid-template-rows: repeat(3, 1fr); /* 3 rows */
+  gap: 10px;
+  width: 100%;
+  max-width: 480px; /* Set a max width for the grid */
+  margin-top: 20px;
+  justify-items: center;
 }
 
-function checkMatch() {
-  const [card1, card2] = flippedCards;
-
-  if (card1.dataset.value === card2.dataset.value) {
-    matchedPairs++;
-    flippedCards = [];
-    if (matchedPairs === cards.length / 2) {
-      showWinPopup();
-      clearInterval(timer);
-    }
-  } else {
-    setTimeout(() => {
-      card1.classList.remove('flipped');
-      card2.classList.remove('flipped');
-      flippedCards = [];
-    }, 1000);
-  }
+/* Card styling */
+.card {
+  position: relative;
+  width: 100%;
+  height: 0;
+  padding-bottom: 100%; /* This makes the card square */
+  background-color: #1e1e1e;
+  border-radius: 10px;
+  transform-style: preserve-3d;
+  transition: transform 0.5s ease-in-out;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
 }
 
-function startTimer() {
-  timer = setInterval(() => {
-    if (timeLeft <= 0) {
-      clearInterval(timer);
-      showTimeUpPopup();
-    } else {
-      document.getElementById('timeLeft').textContent = timeLeft;
-      timeLeft--;
-    }
-  }, 1000);
+/* Front and back faces of the card */
+.card .front, .card .back {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 10px;
+  font-size: 2rem; /* Large font for easy reading */
+  color: #fff;
+  background-color: #333;
+  box-sizing: border-box;
+  backface-visibility: hidden; /* Ensure the back of the card is hidden during the flip */
 }
 
-function showWinPopup() {
-  const winPopup = document.getElementById('winPopup');
-  winPopup.style.display = 'flex';
+.card.flipped {
+  transform: rotateY(180deg);
 }
 
-function showTimeUpPopup() {
-  const timeUpPopup = document.getElementById('timeUpPopup');
-  timeUpPopup.style.display = 'flex';
+.card .back {
+  transform: rotateY(180deg);
 }
 
-function resetGame() {
-  timeLeft = 30;
-  matchedPairs = 0;
-  flippedCards = [];
-  document.getElementById('startBtn').style.display = 'block';
-  document.getElementById('timer').style.display = 'none';
-  document.getElementById('resetBtn').style.display = 'none';
-  document.getElementById('gameBoard').innerHTML = '';
-  document.getElementById('winPopup').style.display = 'none';
-  document.getElementById('timeUpPopup').style.display = 'none';
+/* Timer styling */
+#timer {
+  font-size: 1.5rem;
+  color: #fff;
+  margin-top: 20px;
 }
 
-document.getElementById('startBtn').addEventListener('click', () => {
-  document.getElementById('startBtn').style.display = 'none';
-  document.getElementById('timer').style.display = 'block';
-  document.getElementById('resetBtn').style.display = 'block';
-  createBoard();
-});
+/* Buttons */
+button {
+  background-color: #28a745;
+  color: white;
+  padding: 12px 24px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-top: 20px;
+  font-size: 1.2em;
+  transition: background-color 0.3s ease;
+}
 
-document.getElementById('resetBtn').addEventListener('click', resetGame);
+button:hover {
+  background-color: #218838;
+}
 
-document.getElementById('closePopupBtn').addEventListener('click', () => {
-  document.getElementById('winPopup').style.display = 'none';
-  resetGame();
-});
+/* Popups */
+#winPopup, #timeUpPopup {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.5);
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
 
-document.getElementById('closeTimeUpBtn').addEventListener('click', () => {
-  document.getElementById('timeUpPopup').style.display = 'none';
-  resetGame();
-});
+#winPopup div, #timeUpPopup div {
+  background-color: white;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+}
+
+#winPopup button, #timeUpPopup button {
+  background-color: #ff6347;
+  color: white;
+  padding: 10px 20px;
+  font-size: 1.2em;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-top: 20px;
+}
